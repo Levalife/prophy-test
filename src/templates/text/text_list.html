@@ -1,0 +1,23 @@
+
+{% block header %}
+  <h1>{% block title %}Texts{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <div>
+      <label for="text">Add text</label>
+    </div>
+    <textarea name="text" id="text"  rows="4" cols="100"></textarea>
+
+    <div>
+      <input type="submit" value="Save">
+    </div>
+  </form>
+
+  {% for text in texts %}
+    <div>{{ text.content|truncate(1024, True) }}</div>
+    <a href="{{ url_for('text.detail', text_id=text.id) }}">More</a>
+  <hr>
+  {% endfor %}
+{% endblock %}

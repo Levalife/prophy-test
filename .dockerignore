@@ -1,0 +1,9 @@
+.env
+.idea
+.git
+.gitignore
+.dockerignore
+!/src/.pylintrc
+Dockfile
+docker-compose.yml
+README.md
