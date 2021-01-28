@@ -2,11 +2,6 @@ version: '3.7'
 
 services:
 
-
-  #command: bash -c "flask init-db"
-
-
-
   postgresql:
     image: postgres
     environment:
@@ -18,29 +13,17 @@ services:
     ports:
       - "5432:5432"
 
-  init_db:
-      build:
-        context: .
-        dockerfile: ./Dockerfile
-      command: bash -c "sleep 15 && flask init-db"
-      container_name: prophy_init
-      environment:
-        - FLASK_APP=src
-      depends_on:
-      - redis
-      - postgresql
-
   web:
     build:
       context: .
       dockerfile: ./Dockerfile
     # to make server accessible from browser add "-h 0.0.0.0"
-    command: bash -c "flask run -h 0.0.0.0"
+    command: bash -c "flask init-db && flask run -h 0.0.0.0"
     restart: always
     container_name: prophy
     environment:
       - FLASK_APP=src
-      #- FLASK_ENV=development
+      - FLASK_ENV=development
       - REDIS_URL=redis://redis
     volumes:
       - .:/prophy/
@@ -87,17 +70,11 @@ services:
         reservations:
           memory: 256M
 
-
-
   redis:
     image: redis
     container_name: redis
-    # expose only for internal docker network
-    #    expose:
-    #      - 6379
     ports:
       - "6379:6379"
-
 
   flower:
     image: mher/flower

@@ -35,12 +35,9 @@ def connect_db():
     return conn
 
 def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
     if not hasattr(g, 'db'):
         g.db = connect_db()
-    return g.db.cursor()
+    return g.db
 
 
 
@@ -49,6 +46,7 @@ def close_db(e=None):
 
     if db is not None:
         db.close()
+        print("***CLOSING CONNECTION***")
 
 def init_db():
     db = get_db()
@@ -57,12 +55,12 @@ def init_db():
     #     db.executescript(f.read().decode('utf8'))
 
     command = '''
-        DROP TABLE IF EXISTS text;
         DROP TABLE IF EXISTS keyphrase;
+        DROP TABLE IF EXISTS text;
         
         CREATE TABLE text (
           id SERIAL PRIMARY KEY,
-          content VARCHAR(10000) NOT NULL
+          content VARCHAR(64000) NOT NULL
         );
         
         CREATE TABLE keyphrase (
@@ -73,16 +71,17 @@ def init_db():
           is_exists BOOLEAN NULL,
           is_disambiguation BOOLEAN NULL,
           FOREIGN KEY (text_id) REFERENCES text (id)
+          ON UPDATE CASCADE ON DELETE CASCADE
         );
-        SELECT * FROM pg_catalog.pg_tables;
-        SELECT * from text;
     '''
     try:
-        db.execute(command)
-    except (Exception, psycopg2.DatabaseError) as error:
+        db.cursor().execute(command)
+        db.commit()
+        print("success")
+    except (Exception) as error:
         print(error)
     finally:
-        print("success")
+
         if db is not None:
             db.close()
 

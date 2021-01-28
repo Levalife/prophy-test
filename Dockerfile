@@ -7,9 +7,6 @@ FROM python:3.8.5
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-#ENV FLASK_APP=src
-#ENV FLASK_ENV=development
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -y binutils libproj-dev gdal-bin
 
 # create root directory for our project in the container

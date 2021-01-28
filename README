@@ -1,29 +1,17 @@
-export FLASK_APP=src
-export FLASK_ENV=development
+To start project:
 
-flask init-db
+    docker-compose up --build
 
-flask run
-
-
-celery -A src.tasks.run_celery.celery worker
-
-First time:
-docker-compose up --build
-
-docker-compose run web
-
-To init database containers:
-
-    docker-compose up init_db
 
 To launch web containers:
 
     docker-compose up web
 
+
 To launch celery containers:
 
     docker-compose up celery
+
 
 To launch containers and re-build:
 
@@ -41,4 +29,17 @@ To stop containers and keep all volumes:
 To stop containers and remove all volumes:
 
     docker-compose down -v
+
+
+
+export FLASK_APP=src
+export FLASK_ENV=development
+
+flask init-db
+
+flask run
+
+
+celery -A src.tasks.run_celery.celery worker
+
 

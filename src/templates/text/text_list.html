@@ -1,14 +1,15 @@
+{% extends "base.html" %}
 
 {% block header %}
   <h1>{% block title %}Texts{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" >
     <div>
       <label for="text">Add text</label>
     </div>
-    <textarea name="text" id="text"  rows="4" cols="100"></textarea>
+    <textarea name="text" id="text"  style="height: 10%; width: 100%; max-width: 100%; margin-bottom: 10px;"></textarea>
 
     <div>
       <input type="submit" value="Save">
