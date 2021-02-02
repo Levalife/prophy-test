@@ -2,6 +2,10 @@ To start project:
 
     docker-compose up --build
 
+To launche tests:
+
+    docker-compose up --build web_test
+
 
 To launch web containers:
 

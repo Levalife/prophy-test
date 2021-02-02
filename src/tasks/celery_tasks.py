@@ -6,21 +6,17 @@ from src.db import get_db, close_db
 
 import RAKE
 
+from src import handler as db_handler
+
 
 @celery.task()
 def process_text(text_id):
-    db = get_db()
-    cursor = db.cursor()
 
-    cursor.execute('SELECT * FROM text WHERE id=(%s)', (text_id,))
-    text = cursor.fetchone()
-
-    stop_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../content/StopList.txt")
-    rake_object = RAKE.Rake(stop_dir)
+    text = db_handler.get_item("text", text_id)
 
     if text:
-        keywords = rake_object.run(text[1])
 
+        keywords = get_keyphrases(text)
         for phrase, rank in keywords:
 
             if rank > 5:
@@ -33,29 +29,39 @@ def process_text(text_id):
                     # case sensitive wiki API + API may return higher ranked but not precise page
                     # (test cases "google cloud", "Google Cloud" vs "Google Cloud Platform")
                     if result.lower() == phrase.lower():
-                        try:
-                            page = wikipedia.page(result, auto_suggest=False, preload=False)
-                            page_url = page.url
-                            is_exists = True
-
-                        except wikipedia.exceptions.DisambiguationError as error:
-                            is_exists = True
-                            is_disambiguation = True
-                        except wikipedia.exceptions.PageError as error:
-                            pass
+                        is_exists, page_url, is_disambiguation = get_wiki_page(result)
 
                 # sometimes full phrase isn't appear in the search results (test case "queen elizabeth ii")
                 if not is_exists:
-                    try:
-                        page = wikipedia.page(phrase, auto_suggest=False, preload=False)
-                        page_url = page.url
-                        is_exists = True
-                    except wikipedia.exceptions.DisambiguationError as error:
-                        pass
-                    except wikipedia.exceptions.PageError as error:
-                        pass
+                    is_exists, page_url, is_disambiguation = get_wiki_page(phrase)
 
-                cursor.execute("INSERT INTO keyphrase (text_id, keyphrase, wiki_url,is_exists, is_disambiguation) VALUES (%s,%s,%s,%s,%s)",
-                           (text_id, phrase, page_url, is_exists, is_disambiguation))
-                db.commit()
-    close_db()
+                try:
+                    db_handler.create_keyphrase(text_id, phrase, page_url, is_exists, is_disambiguation)
+                except TypeError:
+                    print("Invalid values")
+
+
+def get_keyphrases(text):
+    stop_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../content/StopList.txt")
+    rake_object = RAKE.Rake(stop_dir)
+
+    keywords = rake_object.run(text.get("content", ""))
+    return keywords
+
+
+def get_wiki_page(phrase):
+    try:
+        page = wikipedia.page(phrase, auto_suggest=False, preload=False)
+        page_url = page.url
+        is_exists = True
+        is_disambiguation = False
+    except wikipedia.exceptions.DisambiguationError as error:
+        is_exists = True
+        is_disambiguation = True
+        page_url = None
+    except wikipedia.exceptions.PageError as error:
+        is_exists = False
+        is_disambiguation = False
+        page_url = None
+
+    return is_exists, page_url, is_disambiguation

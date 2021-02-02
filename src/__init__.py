@@ -18,7 +18,7 @@
 import os
 
 from celery import Celery
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, redirect, url_for
 
 celery = Celery(__name__, broker='redis://redis:6379')
 

@@ -13,6 +13,19 @@ services:
     ports:
       - "5432:5432"
 
+  postgresql_test:
+    image: postgres
+    environment:
+      - POSTGRES_DB=prophy_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db:/var/lib/postgresql_test/data/
+    ports:
+      - "5433:5433"
+    command: -p 5433
+
+
   web:
     build:
       context: .
@@ -83,6 +96,31 @@ services:
       - "8888:8888"
     depends_on:
       - redis
+
+  web_test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    # to make server accessible from browser add "-h 0.0.0.0"
+    command: bash -c "pytest"
+    restart: always
+    container_name: prophy_test
+    volumes:
+      - .:/prophy/
+      - py_wheels:/root/.cache/pip/wheels
+    depends_on:
+      - postgresql_test
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "1"
+          memory: 768M
+        reservations:
+          memory: 512M
+
 
 
 volumes:
