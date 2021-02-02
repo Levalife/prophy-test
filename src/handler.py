@@ -20,7 +20,7 @@ def get_item(table, id):
 
 def get_keyphrases_by_text(text_id):
     cursor = db.cursor()
-    cursor.execute('SELECT * FROM keyphrase WHERE text_id=(%s)', (text_id,))
+    cursor.execute('SELECT * FROM keyphrase WHERE text_id=(%s) ORDER BY id', (text_id,))
     keyphrases = [parse_keyphrase(k) for k in cursor.fetchall()]
     cursor.close()
     return keyphrases
