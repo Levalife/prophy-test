@@ -1,27 +1,25 @@
+This project implements text processing and key phrases extraction. Each key phrase will be checked for
+availability of Wikipedia articles with the same title.
+
+## Technologies:
+    - flask
+    - postresql
+    - celery
+    - redis
+    - docker
+    - rake (Rapid Automatic Keyword Extraction algorithm)
+
+## Start containers
+
 To start project:
 
     docker-compose up --build
 
-To launche tests:
+Serving on http://0.0.0.0:8080
 
-    docker-compose up --build web_test
+To launch tests:
 
-
-To launch web containers:
-
-    docker-compose up web
-
-
-To launch celery containers:
-
-    docker-compose up celery
-
-
-To launch containers and re-build:
-
-    docker-compose up --build
-
-    docker-compose up --build web
+     docker-compose -f docker-compose-test.yml up --build web_test
 
 
 ## Stop containers
@@ -33,17 +31,5 @@ To stop containers and keep all volumes:
 To stop containers and remove all volumes:
 
     docker-compose down -v
-
-
-
-export FLASK_APP=src
-export FLASK_ENV=development
-
-flask init-db
-
-flask run
-
-
-celery -A src.tasks.run_celery.celery worker
 
 

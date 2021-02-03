@@ -19,6 +19,7 @@ WORKDIR /prophy
 ADD . /prophy/
 
 # Install any needed packages specified in requirements.txt
+RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 

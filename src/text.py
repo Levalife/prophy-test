@@ -8,7 +8,6 @@ from src.tasks.celery_tasks import process_text
 bp = Blueprint('text', __name__, url_prefix='/text')
 
 
-
 @bp.route('/', methods=('GET', 'POST'))
 def create():
     if request.method == 'POST':
@@ -29,9 +28,7 @@ def create():
 
         flash(error)
 
-
     texts = db_handler.get_texts()
-
     return render_template('text/text_list.html', texts=texts)
 
 
@@ -39,8 +36,6 @@ def create():
 def detail(text_id):
 
     text = db_handler.get_item("text", text_id)
-
     keyphrases = db_handler.get_keyphrases_by_text(text_id)
-
     return render_template('text/text_detail.html', text=text, keyphrases=keyphrases)
 

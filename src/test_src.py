@@ -1,6 +1,4 @@
 import pytest
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
 import src.handler as db_handler
 from src import create_app
 
@@ -10,7 +8,6 @@ from src.tasks.celery_tasks import process_keyphrase
 
 @pytest.fixture
 def app():
-    """Create and configure a new app instance for each test."""
 
     app = create_app({"TESTING": True, "DATABASE": "postgresql://postgres:postgres@postgresql_test:5433/prophy_test"})
 
@@ -22,8 +19,9 @@ def app():
 
 @pytest.fixture
 def client(app):
-    """A test client for the app."""
+
     return app.test_client()
+
 
 def test_create_text(app):
 
@@ -36,7 +34,7 @@ def test_create_text(app):
         text = cursor.fetchone()
         cursor.close()
 
-    assert text != None
+    assert text is not None
     assert text[0] == id
     assert text[1] == "Some text"
 
@@ -63,6 +61,7 @@ def test_get_texts(app):
 
 
 def test_create_keyphrase(app):
+
     with app.app_context():
         id = db_handler.create_text("Some text")
         db_handler.create_keyphrase(id, "some", None, False, False)
@@ -76,7 +75,7 @@ def test_create_keyphrase(app):
         keyphrases = cursor.fetchall()
         cursor.close()
 
-    assert text != None
+    assert text is not None
     assert len(keyphrases) == 1
     assert keyphrases[0][1] == id
     assert keyphrases[0][2] == "some"
@@ -85,7 +84,9 @@ def test_create_keyphrase(app):
     assert keyphrases[0][5] == False
     assert text[1] == "Some text"
 
+
 def test_get_keyphrases(app):
+
     with app.app_context():
         id = db_handler.create_text("Some text")
         db_handler.create_keyphrase(id, "some1", None, False, False)
@@ -107,20 +108,25 @@ def test_get_keyphrases(app):
         keyphrases = cursor.fetchall()
         cursor.close()
 
-    assert text != None
+    assert text is not None
     assert len(keyphrases) == 5
     assert keyphrases[0][1] == id
     assert keyphrases[0][2] == "some1"
-    assert keyphrases[0][3] == None
-    assert keyphrases[0][4] == False
-    assert keyphrases[0][5] == False
+    assert keyphrases[0][3] is None
+    assert keyphrases[0][4] is False
+    assert keyphrases[0][5] is False
     assert keyphrases[3][1] == id
     assert keyphrases[3][2] == "some4"
     assert keyphrases[3][3] == "https://google.com"
-    assert keyphrases[3][4] == True
-    assert keyphrases[3][5] == False
+    assert keyphrases[3][4] is True
+    assert keyphrases[3][5] is False
+
+    with pytest.raises(TypeError):
+        db_handler.create_keyphrase(id2, "some22", False, None, "Wrong type text")
+
 
 def test_process_keyphrase():
+
     keyphrase1 = "google cloud"
     keyphrase2 = "queen elizabeth ii"
     keyphrase3 = "real love"

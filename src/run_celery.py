@@ -1,5 +1,3 @@
-import os
-
 from src import create_app, celery
 
 app = create_app()
