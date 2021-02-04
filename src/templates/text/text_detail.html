@@ -23,7 +23,11 @@
                     no
                 {% endif %}
             </div>
-<div>Page url: <a href="{{ keyphrase.wiki_url }}" target="_blank">{{ keyphrase.wiki_url }}</a></div>
+            {% if keyphrase.wiki_url %}
+                <div>Page url:
+                    <a href="{{ keyphrase.wiki_url }}" target="_blank">{{ keyphrase.wiki_url }}</a>
+                </div>
+            {% endif %}
         {% endif%}
     {% endfor %}
 {% endblock %}

@@ -36,7 +36,7 @@ def detail(text_id):
     text = db_handler.get_item("text", text_id)
     if not text:
         abort(404)
-        
+
     keyphrases = db_handler.get_keyphrases_by_text(text_id)
     return render_template('text/text_detail.html', text=text, keyphrases=keyphrases)
 
