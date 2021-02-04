@@ -1,8 +1,8 @@
-import logging
 import os
 import re
 import wikipedia
 import RAKE
+
 from src import celery
 from src import handler as db_handler
 
@@ -23,12 +23,15 @@ def process_text(text_id):
         for phrase, rank in keywords:
 
             if rank > min_rank:
-                is_exists, page_url, is_disambiguation = process_keyphrase(phrase)
-
                 try:
-                    db_handler.create_keyphrase(text_id, phrase, page_url, is_exists, is_disambiguation)
-                except TypeError:
-                    logging.error("Invalid values")
+                    is_exists, page_url, is_disambiguation = process_keyphrase(phrase)
+
+                    try:
+                        db_handler.create_keyphrase(text_id, phrase, page_url, is_exists, is_disambiguation)
+                    except TypeError:
+                        pass
+                except wikipedia.exceptions.WikipediaException:
+                    pass
 
 
 def get_keyphrases(text):

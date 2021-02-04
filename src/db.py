@@ -1,4 +1,3 @@
-import logging
 import os
 from urllib import parse
 import click
@@ -66,7 +65,7 @@ def init_db():
         db.cursor().execute(command)
         db.commit()
     except (Exception) as error:
-        logging.error(error)
+        pass
     finally:
         if db is not None:
             db.close()
