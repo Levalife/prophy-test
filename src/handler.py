@@ -1,6 +1,5 @@
 from src.db import get_db
-from src.utils import parse_text, parse_keyphrase
-
+from src.utils import parse_text, parse_keyphrase, parse_keyphrase_ranked
 
 from werkzeug.local import LocalProxy
 
@@ -63,3 +62,13 @@ def create_keyphrase(*args):
         cursor.close()
     else:
         raise TypeError
+
+
+def get_top_phrases():
+
+    cursor = db.cursor()
+    cursor.execute('SELECT keyphrase, count(*) as rank FROM keyphrase GROUP BY keyphrase ORDER BY rank DESC LIMIT 30')
+
+    keyphrases = [parse_keyphrase_ranked(keyphrase) for keyphrase in cursor.fetchall()]
+    cursor.close()
+    return keyphrases

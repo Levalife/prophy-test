@@ -6,3 +6,4 @@ wikipedia==1.4.0
 psycopg2-binary==2.8.6
 pytest==6.2.2
 waitress==1.4.4
+nltk

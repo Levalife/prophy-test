@@ -42,30 +42,31 @@ def init_db():
 
     db = get_db()
     command = '''
-        DROP TABLE IF EXISTS keyphrase;
-        DROP TABLE IF EXISTS text;
-        
-        CREATE TABLE text (
+        CREATE TABLE IF NOT EXISTS text (
           id SERIAL PRIMARY KEY,
           content VARCHAR(64000) NOT NULL
         );
         
-        CREATE TABLE keyphrase (
+        CREATE TABLE IF NOT EXISTS keyphrase (
           id SERIAL PRIMARY KEY,
           text_id INTEGER NOT NULL,
           keyphrase VARCHAR(64) NOT NULL,
           wiki_url VARCHAR(64) NULL,
-          is_exists BOOLEAN NULL,
-          is_disambiguation BOOLEAN NULL,
+          is_exists BOOLEAN NOT NULL,
+          is_disambiguation BOOLEAN NOT NULL,
           FOREIGN KEY (text_id) REFERENCES text (id)
           ON UPDATE CASCADE ON DELETE CASCADE
         );
+        
+        CREATE INDEX IF NOT EXISTS idx_text ON keyphrase(id);
+        CREATE INDEX IF NOT EXISTS idx_keyphrase_phrase ON keyphrase(keyphrase);
+        CREATE INDEX IF NOT EXISTS idx_keyphrase_text ON keyphrase(text_id);
     '''
     try:
         db.cursor().execute(command)
         db.commit()
     except (Exception) as error:
-        pass
+        print(error)
     finally:
         if db is not None:
             db.close()

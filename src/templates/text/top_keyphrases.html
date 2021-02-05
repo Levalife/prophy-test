@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h1>{% block title %}Top key phrases{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+    <a href="{{ url_for('text.create') }}">Back</a>
+
+    {% for keyphrase in keyphrases %}
+
+        <div>{{ loop.index }}. {{ keyphrase.keyphrase }} {{ keyphrase.rank }}</div>
+
+    {% endfor %}
+{% endblock %}

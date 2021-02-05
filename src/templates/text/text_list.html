@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" >
+    <div><a href="{{ url_for("text.top") }}">Top</a></div>
+    <form method="post" >
     <div>
       <label for="text">Add text</label>
     </div>
@@ -14,11 +15,11 @@
     <div>
       <input type="submit" value="Save">
     </div>
-  </form>
+    </form>
 
-  {% for text in texts %}
-    <div>{{ text.content|truncate(1024, True) }}</div>
-    <a href="{{ url_for('text.detail', text_id=text.id) }}">More</a>
-  <hr>
-  {% endfor %}
+    {% for text in texts %}
+        <div>{{ text.content|truncate(1024, True) }}</div>
+        <a href="{{ url_for('text.detail', text_id=text.id) }}">More</a>
+        <hr>
+    {% endfor %}
 {% endblock %}

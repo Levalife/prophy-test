@@ -19,6 +19,10 @@ import os
 
 from celery import Celery
 from flask import Flask, redirect, url_for
+import nltk
+
+nltk.download('wordnet')
+nltk.download('punkt')
 
 celery = Celery(__name__, broker='redis://redis:6379')
 

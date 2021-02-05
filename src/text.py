@@ -40,3 +40,10 @@ def detail(text_id):
     keyphrases = db_handler.get_keyphrases_by_text(text_id)
     return render_template('text/text_detail.html', text=text, keyphrases=keyphrases)
 
+@bp.route('/top', methods=('GET',))
+def top():
+    keyphrases = db_handler.get_top_phrases()
+    return render_template("text/top_keyphrases.html", keyphrases=keyphrases)
+
+
+

@@ -1,18 +1,21 @@
 import os
 import re
+
+import nltk
 import wikipedia
 import RAKE
 
 from src import celery
 from src import handler as db_handler
 
-min_rank = 5
+min_rank = 0
 stop_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../content/StopList.txt")
 rake_object = RAKE.Rake(stop_dir)
 
 cleanr1 = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6})|\[[0-9]*\]')
 cleanr2 = re.compile('\\r\\n')
 
+lemmatizer = nltk.WordNetLemmatizer()
 
 @celery.task()
 def process_text(text_id):
@@ -21,7 +24,6 @@ def process_text(text_id):
     if text:
         keywords = get_keyphrases(text)
         for phrase, rank in keywords:
-
             if rank > min_rank:
                 try:
                     is_exists, page_url, is_disambiguation = process_keyphrase(phrase)
@@ -36,7 +38,7 @@ def process_text(text_id):
 
 def get_keyphrases(text):
 
-    keywords = rake_object.run(clean_text(text.get("content", "")))
+    keywords = rake_object.run(lemmatize_text(clean_text(text.get("content", ""))))
     return keywords
 
 
@@ -45,6 +47,12 @@ def clean_text(raw_text):
     cleantext = re.sub(cleanr1, '', raw_text)
     cleantext = re.sub(cleanr2, ' ', cleantext)
     return cleantext
+
+
+def lemmatize_text(text):
+
+    words = nltk.word_tokenize(text)
+    return " ".join([lemmatizer.lemmatize(word.lower()) for word in words])
 
 
 def process_keyphrase(phrase):
